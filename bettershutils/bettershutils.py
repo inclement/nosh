@@ -6,13 +6,13 @@ from functools import wraps
 
 def _get_num_args_text(min, max):
     if min is not None and max is not None:
-        '{} to {} arguments'.format(min, max)
+        return '{} to {} arguments'.format(min, max)
     elif min is not None:
-        'at least {} arguments'.format(min)
+        return 'at least {} argument(s)'.format(min)
     elif max is not None:
-        'no more than {} arguments'.format(max)
+        return 'no more than {} arguments'.format(max)
     else:
-        'any number of arguments'
+        return 'any number of arguments'
 
 def _require_args(min=None, max=None,
                   errors={None: 'Invalid number of arguments'}):
@@ -54,10 +54,10 @@ def mv(*args):
     else:
         pass
 
+@_require_args(min=1)
 @_expand_paths
 def rm(*args, recursive=False, dir=False, ignore_errors=False):
     for arg in args:
-        print('would delete {}, is dir {}'.format(arg, path.isdir(arg)))
         if not path.exists(arg) and ignore_errors:
             continue
         if path.isdir(arg):
