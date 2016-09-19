@@ -16,7 +16,7 @@ def _get_num_args_text(min, max):
     else:
         return 'any number of arguments'
 
-def _require_args(min=None, max=None,
+def require_args(min=None, max=None,
                   errors={None: 'Invalid number of arguments'}):
     '''Decorator that checks if the function has received a valid number
     of arguments.'''
@@ -33,7 +33,7 @@ def _require_args(min=None, max=None,
         return new_func
     return require_args_decorator
 
-def _expand_paths(*args, glob=True):
+def expand_paths(*args, glob=True):
     '''Assumes all the args of func are paths, and expands them.
 
     If any args are passed, any kwargs with these names are also
@@ -57,7 +57,7 @@ def _expand_paths(*args, glob=True):
         return new_func
     return expand_paths_decorator
 
-@_require_args(min=2, max=None)
+@require_args(min=2, max=None)
 def mv(*args):
     target = args[-1]
     sources = args[:-1]
@@ -72,8 +72,8 @@ def mv(*args):
     else:
         shutil.move(sources[0], target)
 
-@_require_args(min=1)
-@_expand_paths
+@require_args(min=1)
+@expand_paths
 def rm(*args, recursive=False, dir=False, ignore_errors=False):
     for arg in args:
         if not path.exists(arg) and ignore_errors:
@@ -97,7 +97,7 @@ def pwd():
     return expand_path(os.curdir)
 
 
-@_expand_paths('path')
+@expand_paths('path')
 def ls(path='.'):
     return os.listdir(path)
 
