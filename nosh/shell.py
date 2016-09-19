@@ -1,3 +1,6 @@
+'''
+Implementations of file management shell commands.
+'''
 
 import shutil
 import os
