@@ -21,7 +21,17 @@ def _get_num_args_text(min, max):
 def require_args(min=None, max=None,
                   errors={None: 'Invalid number of arguments'}):
     '''Decorator that checks if the function has received a valid number
-    of arguments.'''
+    of arguments.
+
+    Parameters
+    ----------
+    min : int or None
+        The minimum number of arguments the function must accept.
+        Defaults to None (no minimum).
+    max : int or None
+        The maximum number of arguments the function must accept
+        Defaults to None (no maximum).
+    '''
     def require_args_decorator(func):
         @wraps(func)
         def new_func(*args, **kwargs):
@@ -38,8 +48,13 @@ def require_args(min=None, max=None,
 def expand_paths(*args, do_glob=True):
     '''Assumes all the args of func are paths, and expands them.
 
-    If any args are passed, any kwargs with these names are also
-    expanded as filenames.
+    If any args are passed, the function's kwargs are also expanded as
+    paths if they match one of the args.
+
+    Parameters
+    ----------
+    do_glob : bool
+        If True, glob patterns in the args are expanded. Defaults to True. 
     '''
     def expand_paths_decorator(func):
         @wraps(func)
@@ -63,6 +78,15 @@ def expand_paths(*args, do_glob=True):
 
 @require_args(min=2, max=None)
 def mv(*args):
+    '''Move files from one location to another.
+
+    If the the final argument is a directory, all preceding arguments
+    are moved into this dir.
+
+    If the final argument is a filepath, there can only be one other
+    argument, which is moved to the target location.
+
+    '''
     target = args[-1]
     sources = args[:-1]
     
@@ -78,7 +102,21 @@ def mv(*args):
 
 @require_args(min=1)
 @expand_paths()
-def rm(*args, recursive=False, dir=False, ignore_errors=False):
+def rm(*args, recursive=False, ignore_errors=False):
+    '''
+    Delete files and/or directories.
+
+    Parameters
+    ----------
+    *args : strings
+        The file and directory paths to delete. Glob patterns are expanded.
+    recursive : bool
+        If True, will recursively delete folders and their contents.
+        Defaults to False.
+    ignore_errors : bool
+        If True, will ignore errors when e.g. specified  files do not exist. 
+        Defaults to False.
+    '''
     for arg in args:
         if not path.exists(arg) and ignore_errors:
             continue
@@ -97,6 +135,17 @@ def rm(*args, recursive=False, dir=False, ignore_errors=False):
 @require_args(min=2)
 @expand_paths()
 def cp(*args, recursive=False):
+    '''Copy files and/or directories.
+
+    Parameters
+    ----------
+    *args : strings
+        The names of files to copy, and target directory. The final arg is the
+        target filepath/directory, all preceding args are copied. Each path
+        is expanded as a glob pattern.
+    recursive : bool
+        Whether to copy directories (recursively).  
+    '''
     target = args[-1]
     sources = args[:-1]
 
@@ -106,9 +155,24 @@ def cp(*args, recursive=False):
 
     if path.isdir(target):
         for source in sources:
-            shutil.copy(source, target)
+            if path.isdir(source):
+                if recursive:
+                    dir_name = path.basename(source)
+                    shutil.copytree(source, path.join(target, dir_name))
+                else:
+                    print('Omitting directory {}'.format(source))
+            else:
+                shutil.copy(source, target)
     else:
-        shutil.copy(sources[0], target)
+        source = sources[0]
+
+        if path.isdir(source) and path.exists(target):
+            raise FileExistsError('Cannot copy directory to file that '
+                                  'already exists')
+        elif path.isdir(source):
+            shutil.copytree(source, target)
+        else:
+            shutil.copy(source, target)
     
 
 def pwd():
