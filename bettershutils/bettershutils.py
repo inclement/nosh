@@ -82,11 +82,14 @@ def pwd():
 def ls(path='.'):
     return os.listdir(path)
 
-def mkdir(path, mode=511, parents=False):
+def mkdir(dir_name, mode=511, parents=False, exist_ok=False):
     if parents:
-        os.makedirs(path, mode=mode)
+        os.makedirs(dir_name, mode=mode, exist_ok=exist_ok)
     else:
-        os.mkdir(path, mode=mode)
+        if path.exists(dir_name):
+            if exist_ok:
+                return
+        os.mkdir(dir_name, mode=mode)
 
 def ln(source, target, softlink=False):
     pass
