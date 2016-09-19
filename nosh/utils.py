@@ -75,9 +75,7 @@ def expand_paths(*args, do_glob=True):
     def expand_paths_decorator(func):
         @wraps(func)
         def new_func(*fargs, **fkwargs):
-            print('fargs are', fargs)
             fargs = [expand_path(arg) for arg in fargs]
-            print('and now', fargs)
             if do_glob:
                 new_args = []
                 for arg in fargs:
@@ -91,7 +89,6 @@ def expand_paths(*args, do_glob=True):
                 if kwarg in args:
                     fkwargs[kwarg] = expand_path(fkwargs[kwarg])
                 
-            print('func', fargs, fkwargs)
             return func(*fargs, **fkwargs)
         return new_func
     return expand_paths_decorator
