@@ -81,13 +81,20 @@ def expand_paths(*args, do_glob=True):
             if do_glob:
                 new_args = []
                 for arg in fargs:
-                    new_args.extend(glob.glob(arg))
+                    if not glob_pattern_present(arg):
+                        new_args.append(arg)
+                    else:
+                        new_args.extend(glob.glob(arg))
                 fargs = new_args
             
             for kwarg in fkwargs:
                 if kwarg in args:
                     fkwargs[kwarg] = expand_path(fkwargs[kwarg])
                 
+            print('func', fargs, fkwargs)
             return func(*fargs, **fkwargs)
         return new_func
     return expand_paths_decorator
+
+def glob_pattern_present(string):
+    return any([c in string for c in ('*?[]')])
