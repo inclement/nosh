@@ -97,5 +97,15 @@ def ln(source, target, softlink=False):
 def expand_path(input):
     return path.abspath(path.expanduser(input))
 
-def current_directory(path):
-    pass
+@contextlib.contextmanager
+def current_directory(new_dir):
+    '''Context manager to temporarily move to a different directory.
+
+    '''
+    new_dir = expand_path(new_dir)
+    cur_dir = os.getcwd()
+    print('-> context {}'.format(new_dir))
+    os.chdir(new_dir)
+    yield
+    print('<- context {}'.format(cur_dir))
+    os.chdir(cur_dir)
