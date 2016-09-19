@@ -140,6 +140,16 @@ def mkdir(dir_name, mode=511, parents=False, exist_ok=False):
                 return
         os.mkdir(dir_name, mode=mode)
 
+@expand_paths()
+def touch(*args):
+    '''Highly incomplete touch implementation (currently only can create
+    empty files).
+    '''
+    for filen in args:
+        if not path.exists(filen):
+            with open(filen, 'w') as fileh:
+                pass
+
 # def ln(source, target, softlink=False):
 #     pass
 
