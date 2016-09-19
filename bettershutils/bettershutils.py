@@ -33,13 +33,29 @@ def _require_args(min=None, max=None,
         return new_func
     return require_args_decorator
 
-def _expand_paths(func):
-    '''Assumes all the args of func are paths, and expands them.'''
-    @wraps(func)
-    def new_func(*args, **kwargs):
-        args = [expand_path(arg) for arg in args]
-        return func(*args, **kwargs)
-    return new_func
+def _expand_paths(*args, glob=True):
+    '''Assumes all the args of func are paths, and expands them.
+
+    If any args are passed, any kwargs with these names are also
+    expanded as filenames.
+    '''
+    def expand_paths_decorator(func):
+        @wraps(func)
+        def new_func(*fargs, **fkwargs):
+            fargs = [expand_path(arg) for arg in fargs]
+            if glob:
+                new_args = []
+                for arg in fargs:
+                    new_args.extend(glob.glob(arg))
+                fargs = new_args
+            
+            for kwarg in fkwargs:
+                if kwarg in args:
+                    fkwargs[kwarg] = expand_path(fkwargs[kwarg])
+                
+            return func(*fargs, **fkwargs)
+        return new_func
+    return expand_paths_decorator
 
 @_require_args(min=2, max=None)
 def mv(*args):
@@ -55,7 +71,6 @@ def mv(*args):
             shutil.move(arg, target)
     else:
         shutil.move(sources[0], target)
-            
 
 @_require_args(min=1)
 @_expand_paths
@@ -82,6 +97,7 @@ def pwd():
     return expand_path(os.curdir)
 
 
+@_expand_paths('path')
 def ls(path='.'):
     return os.listdir(path)
 
