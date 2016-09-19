@@ -72,17 +72,21 @@ def rm(*args, recursive=False, dir=False, ignore_errors=False):
         else:
             os.unlink(arg)
 
-def pwd():
-    return expand_path(os.curdir)
-
 def cp(*args, recursive=False):
     pass
 
-def ls(path='.'):
-    pass
+def pwd():
+    return expand_path(os.curdir)
 
-def mkdir(path, parents=False):
-    pass
+
+def ls(path='.'):
+    return os.listdir(path)
+
+def mkdir(path, mode=511, parents=False):
+    if parents:
+        os.makedirs(path, mode=mode)
+    else:
+        os.mkdir(path, mode=mode)
 
 def ln(source, target, softlink=False):
     pass
