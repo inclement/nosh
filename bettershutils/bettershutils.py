@@ -3,12 +3,14 @@ import shutil
 import os
 from os import path
 from functools import wraps
+import contextlib
 
 def _get_num_args_text(min, max):
     if min is not None and max is not None:
         return '{} to {} arguments'.format(min, max)
     elif min is not None:
-        return 'at least {} argument(s)'.format(min)
+        return 'at least {} argument{}'.format(
+            min, 's' if min > 1 else '')
     elif max is not None:
         return 'no more than {} arguments'.format(max)
     else:
@@ -49,10 +51,11 @@ def mv(*args):
                          'sources were specified')
 
     if path.isdir(target):
-        pass
-
+        for arg in args:
+            shutil.move(arg, target)
     else:
-        pass
+        shutil.move(sources[0], target)
+            
 
 @_require_args(min=1)
 @_expand_paths
