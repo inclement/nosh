@@ -206,3 +206,5 @@ class TestRm(object):
         no.rm('dir1', recursive=True)
         assert not path.exists('dir1')
         
+def test_pwd():
+    p = no.pwd()
