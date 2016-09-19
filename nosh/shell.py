@@ -8,6 +8,7 @@ from os import path
 from functools import wraps
 import glob
 import fnmatch
+from collections import defaultdict
 
 from nosh.utils import expand_path, require_args, expand_paths
 
@@ -122,14 +123,14 @@ def pwd():
 def ls(*args):
     if not args:
         args = ['.']
-    results = {}
+    results = defaultdict(lambda: [])
     for arg in args:
         if path.isdir(arg):
             results[arg] = os.listdir(arg)
         elif path.exists(arg):  # arg is a file
-            results[arg] = [arg]
+            results[path.dirname(arg)].append(arg)
         else:
-            results[arg] = glob.glob(arg)
+            results[path.dirname(arg)].extend(glob.glob(arg))
     if len(results) == 1:
         return results[list(results.keys())[0]]
     return results
