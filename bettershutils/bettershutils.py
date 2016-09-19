@@ -58,6 +58,8 @@ def mv(*args):
 def rm(*args, recursive=False, dir=False, ignore_errors=False):
     for arg in args:
         print('would delete {}, is dir {}'.format(arg, path.isdir(arg)))
+        if not path.exists(arg) and ignore_errors:
+            continue
         if path.isdir(arg):
             if not recursive:
                 error = 'Cannot remove "{}": Is a directory'.format(arg)
@@ -71,7 +73,7 @@ def rm(*args, recursive=False, dir=False, ignore_errors=False):
             os.unlink(arg)
 
 def pwd():
-    pass
+    return expand_path(os.curdir)
 
 def cp(*args, recursive=False):
     pass
