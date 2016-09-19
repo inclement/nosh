@@ -14,19 +14,30 @@ def _get_num_args_text(min, max):
     else:
         'any number of arguments'
 
-def _require_args(func, min=None, max=None,
-                  errors={_: 'Invalid number of arguments'}):
+def _require_args(min=None, max=None,
+                  errors={None: 'Invalid number of arguments'}):
     '''Decorator that checks if the function has received a valid number
     of arguments.'''
+    def require_args_decorator(func):
+        @wraps(func)
+        def new_func(*args, **kwargs):
+            if max is not None and len(args) > max:
+                raise TypeError('{} takes {}, but {} given'.format(
+                    func, _get_num_args_text(min, max), len(args)))
+            elif min is not None and len(args) < min:
+                raise TypeError('{} takes {}, but {} given'.format(
+                    func, _get_num_args_text(min, max), len(args)))
+            return func(*args, **kwargs)
+        return new_func
+    return require_args_decorator
+
+def _expand_paths(func):
+    '''Assumes all the args of func are paths, and expands them.'''
     @wraps(func)
     def new_func(*args, **kwargs):
-        if max is not None and len(args) > max:
-            raise TypeError('{} takes {}, but {} given'.format(
-                func, _get_num_args_text(min, max), len(args)))
-        elif min is not None and len(args) < min:
-            raise TypeError('{} takes {}, but {} given'.format(
-                func, _get_num_args_text(min, max), len(args)))
+        args = [expand_path(arg) for arg in args]
         return func(*args, **kwargs)
+    return new_func
 
 @_require_args(min=2, max=None)
 def mv(*args):
@@ -43,8 +54,10 @@ def mv(*args):
     else:
         pass
 
+@_expand_paths
 def rm(*args, recursive=False, dir=False):
-    pass
+    for arg in args:
+        print('would delete {}, is dir {}'.format(arg, path.isdir(arg)))
 
 def pwd():
     pass
@@ -63,9 +76,8 @@ def ln(source, target, softlink=False):
 
 
 
-def expand_path(path):
-    # Apply all of realpath, expanduser etc.
-    pass
+def expand_path(input):
+    return path.abspath(path.expanduser(input))
 
 def current_directory(path):
     pass
