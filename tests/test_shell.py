@@ -124,3 +124,19 @@ class TestCp(object):
 
         with open(path.join('newdir', 'file.txt'), 'r') as fileh:
             assert fileh.read() == 'file contents'
+
+    @temp_dir
+    def test_cp_fail_file_exists(self):
+        create_example_files()
+
+        with pytest.raises(FileExistsError):
+            no.cp('dir1', '1.txt')
+
+    @temp_dir
+    def test_cp_fail_target_file(self):
+        create_example_files()
+        with pytest.raises(ValueError):
+            no.cp('*.txt', '1.txt')
+
+
+    
