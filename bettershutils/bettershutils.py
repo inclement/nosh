@@ -4,6 +4,8 @@ import os
 from os import path
 from functools import wraps
 import contextlib
+import glob
+import fnmatch
 
 def _get_num_args_text(min, max):
     if min is not None and max is not None:
@@ -33,7 +35,7 @@ def require_args(min=None, max=None,
         return new_func
     return require_args_decorator
 
-def expand_paths(*args, glob=True):
+def expand_paths(*args, do_glob=True):
     '''Assumes all the args of func are paths, and expands them.
 
     If any args are passed, any kwargs with these names are also
@@ -42,8 +44,10 @@ def expand_paths(*args, glob=True):
     def expand_paths_decorator(func):
         @wraps(func)
         def new_func(*fargs, **fkwargs):
+            print('fargs are', fargs)
             fargs = [expand_path(arg) for arg in fargs]
-            if glob:
+            print('and now', fargs)
+            if do_glob:
                 new_args = []
                 for arg in fargs:
                     new_args.extend(glob.glob(arg))
@@ -97,9 +101,21 @@ def pwd():
     return expand_path(os.curdir)
 
 
-@expand_paths('path')
-def ls(path='.'):
-    return os.listdir(path)
+@expand_paths('path', do_glob=False)
+def ls(*args):
+    if not args:
+        args = ['.']
+    results = {}
+    for arg in args:
+        if path.isdir(arg):
+            results[arg] = os.listdir(arg)
+        elif path.exists(arg):  # arg is a file
+            results[arg] = [arg]
+        else:
+            results[arg] = glob.glob(arg)
+    if len(results) == 1:
+        return results[list(results.keys())[0]]
+    return results
 
 def mkdir(dir_name, mode=511, parents=False, exist_ok=False):
     if parents:
