@@ -71,13 +71,13 @@ def mv(*args):
                          'sources were specified')
 
     if path.isdir(target):
-        for arg in args:
-            shutil.move(arg, target)
+        for source in sources:
+            shutil.move(source, target)
     else:
         shutil.move(sources[0], target)
 
 @require_args(min=1)
-@expand_paths
+@expand_paths()
 def rm(*args, recursive=False, dir=False, ignore_errors=False):
     for arg in args:
         if not path.exists(arg) and ignore_errors:
@@ -94,8 +94,22 @@ def rm(*args, recursive=False, dir=False, ignore_errors=False):
         else:
             os.unlink(arg)
 
+@require_args(min=2)
+@expand_paths()
 def cp(*args, recursive=False):
-    pass
+    target = args[-1]
+    sources = args[:-1]
+
+    if not path.isdir(target) and len(sources) > 1:
+        raise ValueError('Target is not a directory but multiple '
+                         'sources were specified')
+
+    if path.isdir(target):
+        for source in sources:
+            shutil.copy(source, target)
+    else:
+        shutil.copy(sources[0], target)
+    
 
 def pwd():
     return expand_path(os.curdir)
@@ -126,8 +140,8 @@ def mkdir(dir_name, mode=511, parents=False, exist_ok=False):
                 return
         os.mkdir(dir_name, mode=mode)
 
-def ln(source, target, softlink=False):
-    pass
+# def ln(source, target, softlink=False):
+#     pass
 
 def expand_path(input):
     return path.abspath(path.expanduser(input))
@@ -139,8 +153,6 @@ def current_directory(new_dir):
     '''
     new_dir = expand_path(new_dir)
     cur_dir = os.getcwd()
-    print('-> context {}'.format(new_dir))
     os.chdir(new_dir)
     yield
-    print('<- context {}'.format(cur_dir))
     os.chdir(cur_dir)
