@@ -55,9 +55,20 @@ def mv(*args):
         pass
 
 @_expand_paths
-def rm(*args, recursive=False, dir=False):
+def rm(*args, recursive=False, dir=False, ignore_errors=False):
     for arg in args:
         print('would delete {}, is dir {}'.format(arg, path.isdir(arg)))
+        if path.isdir(arg):
+            if not recursive:
+                error = 'Cannot remove "{}": Is a directory'.format(arg)
+                if ignore_errors:
+                    print(error)
+                else:
+                    raise OSError(error)
+            else:
+                shutil.rmtree(arg, ignore_errors=ignore_errors)
+        else:
+            os.unlink(arg)
 
 def pwd():
     pass
@@ -73,8 +84,6 @@ def mkdir(path, parents=False):
 
 def ln(source, target, softlink=False):
     pass
-
-
 
 def expand_path(input):
     return path.abspath(path.expanduser(input))
