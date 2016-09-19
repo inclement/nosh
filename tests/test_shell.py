@@ -139,4 +139,70 @@ class TestCp(object):
             no.cp('*.txt', '1.txt')
 
 
-    
+class TestLs(object):
+    @temp_dir
+    def test_ls(self):
+        create_example_files()
+
+        filens = os.listdir()
+        assert no.ls() == filens
+
+    @temp_dir
+    def test_ls_glob(self):
+        create_example_files()
+
+        filens = os.listdir()
+        assert no.ls('*.txt') == list(
+            [no.expand_path(f) for f in filens if f.endswith('.txt')])
+        assert 'dir1' not in no.ls('*.txt')
+
+        assert len(no.ls('[1-2].txt')) == 2
+
+    @temp_dir
+    def test_ls_glob_filename(self):
+        create_example_files()
+
+        assert len(no.ls('[1-2].txt', '3.txt')) == 3
+
+        
+def TestRm(object):
+    @temp_dir
+    def test_rm_file(self):
+        create_example_files()
+
+        assert path.exists('1.txt')
+        sh.rm('1.txt')
+        assert not path.exist('1.txt')
+
+    @temp_dir
+    def test_rm_files(self):
+        create_example_files()
+        assert path.abspath(os.curdir).startswith('/tmp')
+        assert path.exists('2.txt')
+        assert path.exists('3.txt')
+        sh.rm('*.txt')
+        assert not path.exists('2.txt')
+        assert not path.exists('3.txt')
+        
+    @temp_dir
+    def test_rm_dir_fail(self):
+        create_example_files()
+        assert path.exists('dir1')
+        with pytest.raises(OSError):
+            no.rm('dir1')
+        assert path.exists('dir1')
+
+    @temp_dir
+    def test_rm_dir_success(self):
+        create_example_files()
+        assert path.exists('dir1')
+        no.rm('dir1', ignore_errors=True)
+        assert path.exists('dir1')
+
+    @temp_dir
+    def test_rm_dir_success(self):
+        create_example_files()
+        assert path.exists('dir1')
+        no.rm('dir1', recursive=True)
+        assert not path.exists('dir1')
+        
