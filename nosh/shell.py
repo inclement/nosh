@@ -106,7 +106,10 @@ def cp(*args, recursive=False):
             raise FileExistsError('Cannot copy directory to file that '
                                   'already exists')
         elif path.isdir(source):
-            shutil.copytree(source, target)
+            if recursive:
+                shutil.copytree(source, target)
+            else:
+                print('Omitting directory {}'.format(source))
         else:
             shutil.copy(source, target)
     
@@ -131,6 +134,7 @@ def ls(*args):
         return results[list(results.keys())[0]]
     return results
 
+@expand_paths(do_glob=False)
 def mkdir(dir_name, mode=511, parents=False, exist_ok=False):
     if parents:
         os.makedirs(dir_name, mode=mode, exist_ok=exist_ok)
