@@ -165,14 +165,14 @@ class TestLs(object):
         assert len(no.ls('[1-2].txt', '3.txt')) == 3
 
         
-def TestRm(object):
+class TestRm(object):
     @temp_dir
     def test_rm_file(self):
         create_example_files()
 
         assert path.exists('1.txt')
-        sh.rm('1.txt')
-        assert not path.exist('1.txt')
+        no.rm('1.txt')
+        assert not path.exists('1.txt')
 
     @temp_dir
     def test_rm_files(self):
@@ -180,7 +180,7 @@ def TestRm(object):
         assert path.abspath(os.curdir).startswith('/tmp')
         assert path.exists('2.txt')
         assert path.exists('3.txt')
-        sh.rm('*.txt')
+        no.rm('*.txt')
         assert not path.exists('2.txt')
         assert not path.exists('3.txt')
         
