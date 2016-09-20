@@ -56,6 +56,8 @@ shutil.copytree('some_folder_name', join('target', 'some_folder_name'))
 
 ## Examples
 
+Here are some examples of basic nosh functionality:
+
 ```python
 import nosh as no
 
@@ -110,13 +112,32 @@ print(no.ls())  # []
 
 ## Other features
 
-### Unexpected operations
+### Fail on unexpected behaviour
 
 Unlike the shell, nosh tries to raise errors rather than continuing
 processing when e.g. you try to copy a directory without
 recursive=True (whereas `cp` would just print `cp: omitting directory
 'dirname'`). You can tell individual commands to ignore such problems
-by passing `ignore_errors=True`.
+for more shell-like behaviour by passing `ignore_errors=True`.
+
+```bash
+# in bash
+mkdir testdir
+cp testdir testdir2  # cp: omitting directory 'testdir'
+cp -r testdir testdir2  # works
+```
+
+```python
+# in Python with nosh
+import nosh as no
+no.mkdir('testdir')
+no.cp('testdir', 'testdir2')  # raises IsADirectoryError
+no.cp('testdir', 'testdir2', recursive=True)  # works
+no.cp('testdir', 'testdir2', ignore_errors=True) 
+    # prints 'Error: Tried to copy directory but recursive is False.'
+    # but does not raise an exception and continues processing
+
+```
 
 ### Directory convenience utilities
 
