@@ -159,6 +159,7 @@ from nosh import temp_directory
 from os.path import exists
 with temp_directory() as temp_dir:
     print(temp_dir)  # will print something like /tmp/tmpsg_kdx64
+    print(exists(temp_dir))  # True
 print(exists(temp_dir))  # False
 ```
 
