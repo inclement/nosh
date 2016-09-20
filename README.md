@@ -75,10 +75,10 @@ nosh provides some utilities for working with directories.
 Temporarily moving into a directory:
 
 ```python
-from nosh import current_directory
+from nosh import current_directory, pwd
 with current_directory('some_dir_name'):
     # within this block, we are in `some_dir_name`
-    print(nosh.pwd())  # will print /path/to/some_dir_name
+    print(pwd())  # will print /path/to/some_dir_name
 ```
 
 Creating a temporary directory that is removed outside the context:
