@@ -1,9 +1,10 @@
 
 # nosh
 
-Nosh provides pure Python functions for file manipulation (moving,
-copying, deleting etc.) and other shell-like tasks such as directory
-listing and archive management.
+Nosh stands for **no** **sh**ell. It provides pure Python functions
+for file manipulation (moving, copying, deleting etc.) and other
+shell-like tasks such as directory listing and archive management,
+with a consistent API.
 
 Nosh implements Python functions inspired by common shell commands
 such as mv, ls, cp etc. It does not try to strictly copy their
