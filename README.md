@@ -36,21 +36,23 @@ instance, instead of having to check if a file is a directory
 etc. before deciding what copy function to use, you can use code like
 the following:
 
-    # shell command (`target` is a directory)
-    cp *.txt example.mp3 some_folder_name target
+```python
+# shell command (`target` is a directory)
+cp *.txt example.mp3 some_folder_name target
 
-    # nosh
-    import nosh
-    nosh.cp('*.txt', 'example.mp3', 'some_folder_name', 'target')
+# nosh
+import nosh
+nosh.cp('*.txt', 'example.mp3', 'some_folder_name', 'target')
 
-    # Python stdlib
-    import glob
-    import shutil
-    from os.path import join
-    filens = glob.glob('*.txt') + ['example.mp3']
-    for filen in filens:
-        shutil.copy(filen, 'target')
-    shutil.copytree('some_folder_name', join('target', 'some_folder_name'))
+# Python stdlib
+import glob
+import shutil
+from os.path import join
+filens = glob.glob('*.txt') + ['example.mp3']
+for filen in filens:
+    shutil.copy(filen, 'target')
+shutil.copytree('some_folder_name', join('target', 'some_folder_name'))
+```
 
 ## Examples
 
@@ -72,15 +74,20 @@ nosh provides some utilities for working with directories.
 
 Temporarily moving into a directory:
 
-    from nosh import current_directory
-    with current_directory('some_dir_name'):
-        # within this block, we are in `some_dir_name`
-        print(nosh.pwd())  # will print /path/to/some_dir_name
+```python
+from nosh import current_directory
+with current_directory('some_dir_name'):
+    # within this block, we are in `some_dir_name`
+    print(nosh.pwd())  # will print /path/to/some_dir_name
+```
 
 Creating a temporary directory that is removed outside the context:
 
-    from nosh import temp_directory
-    from os.path import exists
-    with temp_directory() as temp_dir:
-        print(temp_dir)  # will print something like /tmp/tmpsg_kdx64
-    print(exists(temp_dir))  # False
+```python
+from nosh import temp_directory
+from os.path import exists
+with temp_directory() as temp_dir:
+    print(temp_dir)  # will print something like /tmp/tmpsg_kdx64
+print(exists(temp_dir))  # False
+```
+
