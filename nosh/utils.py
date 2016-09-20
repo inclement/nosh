@@ -2,23 +2,12 @@
 Utilities for other functions.
 '''
 
-import contextlib
 import os
 from os import path
 import shutil
 from functools import wraps
 import glob
 
-@contextlib.contextmanager
-def current_directory(new_dir):
-    '''Context manager to temporarily move to a different directory.
-
-    '''
-    new_dir = expand_path(new_dir)
-    cur_dir = os.getcwd()
-    os.chdir(new_dir)
-    yield
-    os.chdir(cur_dir)
 
 def expand_path(input):
     return path.abspath(path.expanduser(input))

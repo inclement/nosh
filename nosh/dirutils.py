@@ -3,6 +3,8 @@ import os
 import shutil
 import tempfile
 
+from nosh.utils import expand_path
+
 @contextlib.contextmanager
 def current_directory(new_dir):
     '''Context manager to temporarily move to a different directory.

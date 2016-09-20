@@ -1,5 +1,6 @@
 import nosh.shell as no
 import nosh.utils as noutils
+import nosh.dirutils as nodirutils
 
 from os import path
 import os
@@ -18,13 +19,13 @@ def temp_dir(func):
     if num_params == 0:
         def test_funcname(tmpdir):
             tmpdir = path.join(tmpdir.dirname, tmpdir.basename)
-            with noutils.current_directory(tmpdir):
+            with nodirutils.current_directory(tmpdir):
                 result = func()
             return result
     elif num_params == 1:
         def test_funcname(self, tmpdir):
             tmpdir = path.join(tmpdir.dirname, tmpdir.basename)
-            with noutils.current_directory(tmpdir):
+            with nodirutils.current_directory(tmpdir):
                 result = func(self)
             return result
     else:
@@ -153,7 +154,7 @@ class TestLs(object):
 
         filens = os.listdir()
         assert no.ls('*.txt') == list(
-            [no.expand_path(f) for f in filens if f.endswith('.txt')])
+            [noutils.expand_path(f) for f in filens if f.endswith('.txt')])
         assert 'dir1' not in no.ls('*.txt')
 
         assert len(no.ls('[1-2].txt')) == 2
@@ -256,3 +257,4 @@ class TestMv(object):
 
         assert not path.exists('1.txt')
         assert not path.exists('text_file.txt')
+
