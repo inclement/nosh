@@ -123,7 +123,7 @@ for more shell-like behaviour by passing `ignore_errors=True`.
 ```bash
 # in bash
 mkdir testdir
-cp testdir testdir2  # cp: omitting directory 'testdir'
+cp testdir testdir2  # prints 'cp: omitting directory 'testdir''
 cp -r testdir testdir2  # works
 ```
 
@@ -135,7 +135,8 @@ no.cp('testdir', 'testdir2')  # raises IsADirectoryError
 no.cp('testdir', 'testdir2', recursive=True)  # works
 no.cp('testdir', 'testdir2', ignore_errors=True) 
     # prints 'Error: Tried to copy directory but recursive is False.'
-    # but does not raise an exception and continues processing
+    # but does not raise an exception and would process
+    # other arguments
 
 ```
 
