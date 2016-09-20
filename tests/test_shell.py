@@ -15,23 +15,12 @@ FILE_NAMES = ['{}.txt'.format(i) for i in range(5)]
 
 def temp_dir(func):
     '''Decorator to carry out tests in a py.test temp dir.'''
-    num_params = len(inspect.signature(func).parameters)
-    if num_params == 0:
-        def test_funcname(tmpdir):
-            tmpdir = path.join(tmpdir.dirname, tmpdir.basename)
-            with nodirutils.current_directory(tmpdir):
-                result = func()
-            return result
-    elif num_params == 1:
-        def test_funcname(self, tmpdir):
-            tmpdir = path.join(tmpdir.dirname, tmpdir.basename)
-            with nodirutils.current_directory(tmpdir):
-                result = func(self)
-            return result
-    else:
-        raise ValueError('Decorator can only be applied to functions '
-                         'with 0 or 1 argument')
-    return test_funcname
+    def new_func(*args, **kwargs):
+        with nodirutils.temp_directory() as temp_dir_name:
+            with nodirutils.current_directory(temp_dir_name):
+                print('dir is', no.pwd())
+                return func(*args, **kwargs)
+    return new_func
 
 def create_example_files():
     for dir_name in DIR_NAMES:
