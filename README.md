@@ -135,8 +135,7 @@ no.cp('testdir', 'testdir2')  # raises IsADirectoryError
 no.cp('testdir', 'testdir2', recursive=True)  # works
 no.cp('testdir', 'testdir2', ignore_errors=True) 
     # prints 'Error: Tried to copy directory but recursive is False.'
-    # but does not raise an exception and would process
-    # other arguments
+    # but does not raise an exception and would process other args
 
 ```
 
