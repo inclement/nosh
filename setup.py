@@ -9,5 +9,5 @@ setup(
     author='Alexander Taylor',
     author_email='alexanderjohntaylor@gmail.com',
     packages=packages,
-    package_data={'nosh': ['*.py', '*.kv']}
+    package_data={'nosh': ['*.py']}
 )
