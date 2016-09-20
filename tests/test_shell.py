@@ -205,6 +205,12 @@ class TestRm(object):
         assert path.exists('dir1')
         no.rm('dir1', recursive=True)
         assert not path.exists('dir1')
+
+    @temp_dir
+    def test_rm_no_args(self):
+        create_example_files()
+        with pytest.raises(TypeError):
+            no.rm()
         
 
 def test_pwd():
