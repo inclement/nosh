@@ -51,3 +51,36 @@ the following:
     for filen in filens:
         shutil.copy(filen, 'target')
     shutil.copytree('some_folder_name', join('target', 'some_folder_name'))
+
+## Examples
+
+    
+
+## Other features
+
+### Unexpected operations
+
+Unlike the shell, nosh tries to raise errors rather than continuing
+processing when e.g. you try to copy a directory without
+recursive=True (whereas `cp` would just print `cp: omitting directory
+'dirname'`). You can tell individual commands to ignore such problems
+by passing `ignore_errors=True`.
+
+### Directory convenience utilities
+
+nosh provides some utilities for working with directories.
+
+Temporarily moving into a directory:
+
+    from nosh import current_directory
+    with current_directory('some_dir_name'):
+        # within this block, we are in `some_dir_name`
+        print(nosh.pwd())  # will print /path/to/some_dir_name
+
+Creating a temporary directory that is removed outside the context:
+
+    from nosh import temp_directory
+    from os.path import exists
+    with temp_directory() as temp_dir:
+        print(temp_dir)  # will print something like /tmp/tmpsg_kdx64
+    print(exists(temp_dir))  # False
