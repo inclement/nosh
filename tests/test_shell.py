@@ -81,7 +81,7 @@ class TestCp(object):
             assert fileh.read() == 'text in file'
 
     @temp_dir
-    def cp_to_dir(self):
+    def test_cp_to_dir(self):
         create_example_files()
         assert path.exists('dir1')
         assert path.isdir('dir1')
@@ -206,5 +206,47 @@ class TestRm(object):
         no.rm('dir1', recursive=True)
         assert not path.exists('dir1')
         
+
 def test_pwd():
     p = no.pwd()
+
+
+class TestMv(object):
+    @temp_dir
+    def test_mv_one_file(self):
+        create_example_files()
+
+        assert path.exists('text_file.txt')
+        assert not path.exists('moved_text_file.txt')
+        no.mv('text_file.txt', 'moved_text_file.txt')
+        assert not path.exists('text_file.txt')
+        assert path.exists('moved_text_file.txt')
+        
+        with open('moved_text_file.txt', 'r') as fileh:
+            assert fileh.read() == 'text in file'
+
+    @temp_dir
+    def test_mv_too_few_args(self):
+        create_example_files()
+
+        with pytest.raises(TypeError):
+            no.mv()
+
+    @temp_dir
+    def test_mv_to_dir(self):
+        create_example_files()
+        assert path.exists('dir1')
+        assert path.isdir('dir1')
+        assert not os.listdir('dir1')
+        assert path.exists('text_file.txt')
+
+        no.mv('*.txt', 'dir1')
+
+        for file_name in FILE_NAMES:
+            assert(path.exists(path.join('dir1', file_name)))
+
+        with open(path.join('dir1', 'text_file.txt'), 'r') as fileh:
+            assert fileh.read() == 'text in file'
+
+        assert not path.exists('1.txt')
+        assert not path.exists('text_file.txt')

@@ -14,6 +14,7 @@ from nosh.utils import expand_path, require_args, expand_paths
 
 
 @require_args(min=2, max=None)
+@expand_paths()
 def mv(*args):
     '''Move files from one location to another.
 
