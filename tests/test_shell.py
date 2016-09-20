@@ -18,9 +18,10 @@ def temp_dir(func):
     def new_func(*args, **kwargs):
         with nodirutils.temp_directory() as temp_dir_name:
             with nodirutils.current_directory(temp_dir_name):
-                print('dir is', no.pwd())
+                create_example_files()
                 return func(*args, **kwargs)
     return new_func
+
 
 def create_example_files():
     for dir_name in DIR_NAMES:
@@ -32,9 +33,9 @@ def create_example_files():
     with open('text_file.txt', 'w') as fileh:
         fileh.write('text in file')
 
+
 @temp_dir
 def test_create_example_files():
-    create_example_files()
     for dir_name in DIR_NAMES:
         assert path.exists(dir_name)
         assert path.isdir(dir_name)
@@ -61,7 +62,6 @@ def test_touch():
 class TestCp(object):
     @temp_dir
     def test_cp_one_file(self):
-        create_example_files()
 
         assert not path.exists('cp_file.txt')
         no.cp('text_file.txt', 'cp_file.txt')
@@ -72,7 +72,6 @@ class TestCp(object):
 
     @temp_dir
     def test_cp_to_dir(self):
-        create_example_files()
         assert path.exists('dir1')
         assert path.isdir('dir1')
         assert not os.listdir('dir1')
@@ -85,7 +84,6 @@ class TestCp(object):
 
     @temp_dir
     def test_cp_dir_fail(self):
-        create_example_files()
 
         assert path.exists('dir1')
         assert not path.exists('newdir')
@@ -94,7 +92,6 @@ class TestCp(object):
 
     @temp_dir
     def test_cp_dir_success(self):
-        create_example_files()
 
         assert path.exists('dir1')
         assert not path.exists('newdir')
@@ -103,7 +100,6 @@ class TestCp(object):
 
     @temp_dir
     def test_cp_dir_recursive(self):
-        create_example_files()
 
         with open(path.join('dir2', 'file.txt'), 'w') as fileh:
             fileh.write('file contents')
@@ -117,14 +113,12 @@ class TestCp(object):
 
     @temp_dir
     def test_cp_fail_file_exists(self):
-        create_example_files()
 
         with pytest.raises(FileExistsError):
             no.cp('dir1', '1.txt')
 
     @temp_dir
     def test_cp_fail_target_file(self):
-        create_example_files()
         with pytest.raises(ValueError):
             no.cp('*.txt', '1.txt')
 
@@ -132,14 +126,12 @@ class TestCp(object):
 class TestLs(object):
     @temp_dir
     def test_ls(self):
-        create_example_files()
 
         filens = os.listdir()
         assert no.ls() == filens
 
     @temp_dir
     def test_ls_glob(self):
-        create_example_files()
 
         filens = os.listdir()
         assert no.ls('*.txt') == list(
@@ -150,7 +142,6 @@ class TestLs(object):
 
     @temp_dir
     def test_ls_glob_filename(self):
-        create_example_files()
 
         assert len(no.ls('[1-2].txt', '3.txt')) == 3
 
@@ -158,7 +149,6 @@ class TestLs(object):
 class TestRm(object):
     @temp_dir
     def test_rm_file(self):
-        create_example_files()
 
         assert path.exists('1.txt')
         no.rm('1.txt')
@@ -166,7 +156,6 @@ class TestRm(object):
 
     @temp_dir
     def test_rm_files(self):
-        create_example_files()
         assert path.abspath(os.curdir).startswith('/tmp')
         assert path.exists('2.txt')
         assert path.exists('3.txt')
@@ -176,7 +165,6 @@ class TestRm(object):
         
     @temp_dir
     def test_rm_dir_fail(self):
-        create_example_files()
         assert path.exists('dir1')
         with pytest.raises(OSError):
             no.rm('dir1')
@@ -184,21 +172,18 @@ class TestRm(object):
 
     @temp_dir
     def test_rm_dir_success(self):
-        create_example_files()
         assert path.exists('dir1')
         no.rm('dir1', ignore_errors=True)
         assert path.exists('dir1')
 
     @temp_dir
     def test_rm_dir_success(self):
-        create_example_files()
         assert path.exists('dir1')
         no.rm('dir1', recursive=True)
         assert not path.exists('dir1')
 
     @temp_dir
     def test_rm_no_args(self):
-        create_example_files()
         with pytest.raises(TypeError):
             no.rm()
         
@@ -210,7 +195,6 @@ def test_pwd():
 class TestMv(object):
     @temp_dir
     def test_mv_one_file(self):
-        create_example_files()
 
         assert path.exists('text_file.txt')
         assert not path.exists('moved_text_file.txt')
@@ -223,14 +207,12 @@ class TestMv(object):
 
     @temp_dir
     def test_mv_too_few_args(self):
-        create_example_files()
 
         with pytest.raises(TypeError):
             no.mv()
 
     @temp_dir
     def test_mv_to_dir(self):
-        create_example_files()
         assert path.exists('dir1')
         assert path.isdir('dir1')
         assert not os.listdir('dir1')
@@ -246,4 +228,12 @@ class TestMv(object):
 
         assert not path.exists('1.txt')
         assert not path.exists('text_file.txt')
+
+    @temp_dir
+    def test_mv_to_file_fail(self):
+        no.touch('target.txt')
+        with pytest.raises(FileExistsError):
+            no.mv('*.txt', 'target.txt')
+
+        
 

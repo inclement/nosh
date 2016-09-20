@@ -29,8 +29,8 @@ def mv(*args):
     sources = args[:-1]
     
     if not path.isdir(target) and len(sources) > 1:
-        raise ValueError('Target is not a directory but multiple '
-                         'sources were specified')
+        raise FileExistsError('Target is not a directory but multiple '
+                              'sources were specified')
 
     if path.isdir(target):
         for source in sources:
@@ -158,5 +158,3 @@ def touch(*args):
 
 # def ln(source, target, softlink=False):
 #     pass
-
-
