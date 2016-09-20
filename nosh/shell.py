@@ -98,7 +98,8 @@ def cp(*args, recursive=False):
                     dir_name = path.basename(source)
                     shutil.copytree(source, path.join(target, dir_name))
                 else:
-                    print('Omitting directory {}'.format(source))
+                    raise IsADirectoryError('Tried to copy directory but '
+                                            'recursive is False.')
             else:
                 shutil.copy(source, target)
     else:
@@ -111,7 +112,8 @@ def cp(*args, recursive=False):
             if recursive:
                 shutil.copytree(source, target)
             else:
-                print('Omitting directory {}'.format(source))
+                raise IsADirectoryError('Tried to copy directory but '
+                                        'recursive is False.')
         else:
             shutil.copy(source, target)
     

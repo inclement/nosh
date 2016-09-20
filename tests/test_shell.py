@@ -83,14 +83,6 @@ class TestCp(object):
             assert fileh.read() == 'text in file'
 
     @temp_dir
-    def test_cp_dir_fail(self):
-
-        assert path.exists('dir1')
-        assert not path.exists('newdir')
-        no.cp('dir1', 'newdir')
-        assert not path.exists('newdir')
-
-    @temp_dir
     def test_cp_dir_success(self):
 
         assert path.exists('dir1')
@@ -121,6 +113,31 @@ class TestCp(object):
     def test_cp_fail_target_file(self):
         with pytest.raises(NotADirectoryError):
             no.cp('*.txt', '1.txt')
+
+    @temp_dir
+    def test_cp_dir_no_recursive(self):
+        assert not path.exists('new_dir')
+        with pytest.raises(IsADirectoryError):
+            no.cp('dir1', 'new_dir')
+
+    @temp_dir
+    def test_cp_dir_recursive(self):
+        assert not path.exists('new_dir')
+        no.cp('dir1', 'new_dir', recursive=True)
+        assert path.isdir('new_dir')
+
+    @temp_dir
+    def test_cp_dir_recursive_contents(self):
+        assert not path.exists('new_dir')
+        assert not path.exists(path.join('dir1', '1.txt'))
+        no.cp('*.txt', 'dir1')
+        assert path.exists(path.join('dir1', '1.txt'))
+
+        no.cp('dir1', 'new_dir', recursive=True)
+
+        assert path.exists(path.join('new_dir', '1.txt'))
+        assert path.exists(path.join('new_dir', '2.txt'))
+
 
 
 class TestLs(object):
