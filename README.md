@@ -56,7 +56,57 @@ shutil.copytree('some_folder_name', join('target', 'some_folder_name'))
 
 ## Examples
 
-    
+```python
+import nosh as no
+
+# Create some files and directories
+for i in range(5):
+no.touch('{}.txt'.format(i))  # no.touch creates the files
+no.mkdir('dir1')
+no.mkdir('dir2/dir2_contents', parents=True)
+    # when parents=True, both dirs are created
+    # if parents=False, this would raise an error
+no.mkdir('dir3')
+
+print(no.ls())  # ['1.txt', '4.txt', '3.txt', '2.txt', '0.txt', 'dir2', 'dir1']
+
+# Copy files around
+no.cp('1.txt', '1_copy.txt')
+print(no.ls())  # ['1.txt', '4.txt', '3.txt', '1_copy.txt', '2.txt', '0.txt', 'dir2', 'dir1']
+
+no.cp('[1-3].txt', 'dir1')  # glob patterns are supported
+print(no.ls('dir1'))  # ['1.txt', '3.txt', '2.txt']
+
+no.cp('dir2', 'dir1', recursive=True) # Directories can be copied the same way
+print(no.ls('dir1'))  # ['1.txt', '3.txt', '2.txt', 'dir2']
+print(no.ls('dir1/dir2'))  # ['dir2_contents']
+
+# Move files
+print(no.ls())  # ['1.txt', '4.txt', '3.txt', '1_copy.txt', '2.txt', '0.txt', 'dir2', 'dir1']
+print(no.ls('dir3'))  # []
+
+no.mv('1.txt', 'dir3')
+print(no.ls())  # ['4.txt', '3.txt', '1_copy.txt', '2.txt', 'dir3', '0.txt', 'dir2', 'dir1']
+print(no.ls('dir3'))  # ['1.txt']
+
+no.mv('2.txt', 'dir3/moved_2.txt')  # Moving files can rename them
+print(no.ls())  # ['4.txt', '3.txt', '1_copy.txt', 'dir3', '0.txt', 'dir2', 'dir1']
+print(no.ls('dir3'))  # ['1.txt', 'moved_2.txt']
+
+# Delete files
+no.rm('1_copy.txt')
+print(no.ls())  # ['4.txt', '3.txt', 'dir3', '0.txt', 'dir2', 'dir1']
+
+no.rm('dir3', recursive=True)  # Can also delete directories
+print(no.ls())  # ['4.txt', '3.txt', '0.txt', 'dir2', 'dir1']
+
+no.rm('*.txt')  # Glob patterns can be used here too
+                # (and in most other commands)
+print(no.ls())  # ['dir2', 'dir1']
+
+no.rm('*', recursive=True)  # Clean all the directories
+print(no.ls())  # []
+```
 
 ## Other features
 
