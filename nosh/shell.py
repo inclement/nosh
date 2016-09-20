@@ -10,12 +10,13 @@ import glob
 import fnmatch
 from collections import defaultdict
 
-from nosh.utils import expand_path, require_args, expand_paths
+from nosh.utils import (expand_path, require_args, expand_paths,
+                        maybe_exception)
 
 
 @require_args(min=2, max=None)
 @expand_paths()
-def mv(*args):
+def mv(*args, ignore_errors=False):
     '''Move files from one location to another.
 
     If the the final argument is a directory, all preceding arguments
@@ -29,8 +30,10 @@ def mv(*args):
     sources = args[:-1]
     
     if not path.isdir(target) and len(sources) > 1:
-        raise NotADirectoryError('Target is not a directory but multiple '
-                                 'sources were specified')
+        maybe_exception(NotADirectoryError,
+                        ('Target {} is not a directory but multiple sources '
+                         'were specified'.format(target)),
+                        ignore_errors)
 
     if path.isdir(target):
         for source in sources:
@@ -61,10 +64,7 @@ def rm(*args, recursive=False, ignore_errors=False):
         if path.isdir(arg):
             if not recursive:
                 error = 'Cannot remove "{}": Is a directory'.format(arg)
-                if ignore_errors:
-                    print(error)
-                else:
-                    raise IsADirectoryError(error)
+                maybe_exception(IsADirectoryError, error, ignore_errors)
             else:
                 shutil.rmtree(arg, ignore_errors=ignore_errors)
         else:
@@ -72,7 +72,7 @@ def rm(*args, recursive=False, ignore_errors=False):
 
 @require_args(min=2)
 @expand_paths()
-def cp(*args, recursive=False):
+def cp(*args, recursive=False, ignore_errors=False):
     '''Copy files and/or directories.
 
     Parameters
@@ -88,8 +88,10 @@ def cp(*args, recursive=False):
     sources = args[:-1]
 
     if not path.isdir(target) and len(sources) > 1:
-        raise NotADirectoryError('Target is not a directory but multiple '
-                                 'sources were specified')
+        maybe_exception(NotADirectoryError,
+                        ('Target is not a directory but multiple '
+                         'sources were specified'),
+                        ignore_errors)
 
     if path.isdir(target):
         for source in sources:
@@ -98,22 +100,28 @@ def cp(*args, recursive=False):
                     dir_name = path.basename(source)
                     shutil.copytree(source, path.join(target, dir_name))
                 else:
-                    raise IsADirectoryError('Tried to copy directory but '
-                                            'recursive is False.')
+                    maybe_exception(IsADirectoryError,
+                                    ('Tried to copy directory but '
+                                     'recursive is False.'),
+                                    ignore_errors)
             else:
                 shutil.copy(source, target)
     else:
         source = sources[0]
 
         if path.isdir(source) and path.exists(target):
-            raise NotADirectoryError('Cannot copy directory to file that '
-                                     'already exists')
+            maybe_exception(NotADirectoryError,
+                            ('Cannot copy directory to file that '
+                             'already exists'),
+                            ignore_errors)
         elif path.isdir(source):
             if recursive:
                 shutil.copytree(source, target)
             else:
-                raise IsADirectoryError('Tried to copy directory but '
-                                        'recursive is False.')
+                maybe_exception(IsADirectoryError,
+                                ('Tried to copy directory but '
+                                 'recursive is False.'),
+                                ignore_errors)
         else:
             shutil.copy(source, target)
     
@@ -157,6 +165,3 @@ def touch(*args):
         if not path.exists(filen):
             with open(filen, 'w') as fileh:
                 pass
-
-# def ln(source, target, softlink=False):
-#     pass

@@ -82,3 +82,10 @@ def expand_paths(*args, do_glob=True):
 
 def glob_pattern_present(string):
     return any([c in string for c in ('*?[]')])
+
+
+def maybe_exception(exception, message, errors_okay):
+    if not errors_okay:
+        raise exception(message)
+    else:
+        print('Error: {}'.format(message))
