@@ -114,12 +114,12 @@ class TestCp(object):
     @temp_dir
     def test_cp_fail_file_exists(self):
 
-        with pytest.raises(FileExistsError):
+        with pytest.raises(NotADirectoryError):
             no.cp('dir1', '1.txt')
 
     @temp_dir
     def test_cp_fail_target_file(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(NotADirectoryError):
             no.cp('*.txt', '1.txt')
 
 
@@ -166,7 +166,7 @@ class TestRm(object):
     @temp_dir
     def test_rm_dir_fail(self):
         assert path.exists('dir1')
-        with pytest.raises(OSError):
+        with pytest.raises(IsADirectoryError):
             no.rm('dir1')
         assert path.exists('dir1')
 
@@ -184,7 +184,7 @@ class TestRm(object):
 
     @temp_dir
     def test_rm_no_args(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             no.rm()
         
 
@@ -208,7 +208,7 @@ class TestMv(object):
     @temp_dir
     def test_mv_too_few_args(self):
 
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             no.mv()
 
     @temp_dir
@@ -232,7 +232,7 @@ class TestMv(object):
     @temp_dir
     def test_mv_to_file_fail(self):
         no.touch('target.txt')
-        with pytest.raises(FileExistsError):
+        with pytest.raises(NotADirectoryError):
             no.mv('*.txt', 'target.txt')
 
         

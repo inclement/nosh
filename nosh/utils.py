@@ -40,11 +40,9 @@ def require_args(min=None, max=None,
     def require_args_decorator(func):
         @wraps(func)
         def new_func(*args, **kwargs):
-            if max is not None and len(args) > max:
-                raise TypeError('{} takes {}, but {} given'.format(
-                    func, _get_num_args_text(min, max), len(args)))
-            elif min is not None and len(args) < min:
-                raise TypeError('{} takes {}, but {} given'.format(
+            if ((max is not None and len(args) > max) or
+                (min is not None and len(args) < min)):
+                raise ValueError('{} takes {}, but {} given'.format(
                     func, _get_num_args_text(min, max), len(args)))
             return func(*args, **kwargs)
         return new_func

@@ -29,8 +29,8 @@ def mv(*args):
     sources = args[:-1]
     
     if not path.isdir(target) and len(sources) > 1:
-        raise FileExistsError('Target is not a directory but multiple '
-                              'sources were specified')
+        raise NotADirectoryError('Target is not a directory but multiple '
+                                 'sources were specified')
 
     if path.isdir(target):
         for source in sources:
@@ -64,7 +64,7 @@ def rm(*args, recursive=False, ignore_errors=False):
                 if ignore_errors:
                     print(error)
                 else:
-                    raise OSError(error)
+                    raise IsADirectoryError(error)
             else:
                 shutil.rmtree(arg, ignore_errors=ignore_errors)
         else:
@@ -88,8 +88,8 @@ def cp(*args, recursive=False):
     sources = args[:-1]
 
     if not path.isdir(target) and len(sources) > 1:
-        raise ValueError('Target is not a directory but multiple '
-                         'sources were specified')
+        raise NotADirectoryError('Target is not a directory but multiple '
+                                 'sources were specified')
 
     if path.isdir(target):
         for source in sources:
@@ -105,8 +105,8 @@ def cp(*args, recursive=False):
         source = sources[0]
 
         if path.isdir(source) and path.exists(target):
-            raise FileExistsError('Cannot copy directory to file that '
-                                  'already exists')
+            raise NotADirectoryError('Cannot copy directory to file that '
+                                     'already exists')
         elif path.isdir(source):
             if recursive:
                 shutil.copytree(source, target)
