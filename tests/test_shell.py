@@ -1,17 +1,14 @@
-import nosh.shell as no
+import nosh as no
 import nosh.utils as noutils
 import nosh.dirutils as nodirutils
 
 from os import path
 import os
 
-import inspect
-
 import pytest
 
 DIR_NAMES = ('dir1', 'dir2')
 FILE_NAMES = ['{}.txt'.format(i) for i in range(5)]
-
 
 def temp_dir(func):
     '''Decorator to carry out tests in a py.test temp dir.'''
