@@ -18,7 +18,7 @@ import zipfile
 
 @require_args(min=2)
 @expand_paths()
-def tar(*args, compress='gzip', append=False):
+def tar(*args, compress='gz', append=False):
     '''Create or append to tarballs.
 
     Parameters
@@ -38,7 +38,33 @@ def tar(*args, compress='gzip', append=False):
     compress should be more flexible, to work with tarballs with different
     compression types.
     '''
-    pass
+    sources = args[:-1]
+    target = args[-1]
+
+    if compress not in [None, 'gz', 'bz2']:
+        raise ValueError('compress must be one of {}'.format([None, 'gz', 'bz2']))
+
+    if not append and path.exists(target):
+            raise FileExistsError(
+                'Cannot create tar at target {}, file already exists'.format(target))
+
+    if append and not path.exists(target):
+        raise FileNotFoundError(
+            'Cannot append to archive {}, it does not exist'.format(target))
+
+    if append:
+        if compress is not None:
+            raise ValueError(
+                'Appending to compressed ({}) tarfiles not supported'.format(compress))
+        t = tarfile.open(target, mode='a')
+    else:
+        if compress is None:
+            compress = '*'
+        tarh = tarfile.open(target, mode='w:{}'.format(compress))
+
+    with tarh:
+        for source in sources:
+            tarh.add(source)
 
 @expand_paths('target', do_glob=False)
 def untar(tar_path, target='.', compress='auto'):
