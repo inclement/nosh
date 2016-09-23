@@ -42,7 +42,7 @@ cp *.txt example.mp3 some_folder_name target
 
 # nosh
 import nosh
-nosh.cp('*.txt', 'example.mp3', 'some_folder_name', 'target')
+nosh.cp('*.txt', 'example.mp3', 'some_folder_name', 'target', recursive=True)
 
 # Python stdlib
 import glob
