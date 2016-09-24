@@ -56,3 +56,15 @@ class TestTar(object):
         no.touch('existing.tar.gz')
         with pytest.raises(FileExistsError):
             no.tar('*.txt', 'existing.tar.gz')
+
+    @temp_dir
+    def test_tar(self):
+        no.tar('*.txt', 'tarfile.tar.gz')
+
+        import tarfile
+        with tarfile.open('tarfile.tar.gz', 'r') as tarh:
+            members = tarh.getmembers()
+        paths = [m.path for m in members]
+        for file_name in FILE_NAMES:
+            assert file_name in paths
+            
