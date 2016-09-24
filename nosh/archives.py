@@ -6,11 +6,9 @@ of using tar for both creating and unpacking tarballs nosh provides
 
 '''
 
-import os
 from os import path
-from nosh.utils import (expand_path, require_args, expand_paths,
+from nosh.utils import (require_args, expand_paths,
                         maybe_exception)
-import shutil
 
 import tarfile
 import zipfile
@@ -24,8 +22,8 @@ def tar(*args, compress='gz', append=False):
     Parameters
     ----------
     *args : strings
-        The files and directories to place in the tarball. The final argument should be
-        the tarball name.
+        The files and directories to place in the tarball. The final argument
+        should be the tarball name.
     compress : str or False
         Whether to compress the tarball. May be 'gzip', 'bz2' or False.
         Defaults to 'gzip'.
@@ -42,11 +40,13 @@ def tar(*args, compress='gz', append=False):
     target = args[-1]
 
     if compress not in [None, 'gz', 'bz2']:
-        raise ValueError('compress must be one of {}'.format([None, 'gz', 'bz2']))
+        raise ValueError(
+            'compress must be one of {}'.format([None, 'gz', 'bz2']))
 
     if not append and path.exists(target):
             raise FileExistsError(
-                'Cannot create tar at target {}, file already exists'.format(target))
+                ('Cannot create tar at target {}, file already '
+                 'exists').format(target))
 
     if append and not path.exists(target):
         raise FileNotFoundError(
@@ -55,7 +55,8 @@ def tar(*args, compress='gz', append=False):
     if append:
         if compress is not None:
             raise ValueError(
-                'Appending to compressed ({}) tarfiles not supported'.format(compress))
+                ('Appending to compressed ({}) tarfiles not '
+                 'supported').format(compress))
         tarh = tarfile.open(target, mode='a')
     else:
         if compress is None:
@@ -65,6 +66,7 @@ def tar(*args, compress='gz', append=False):
     with tarh:
         for source in sources:
             tarh.add(source)
+
 
 @expand_paths('target', do_glob=False)
 def untar(tar_path, target='.', compress='auto'):
@@ -91,16 +93,15 @@ def untar(tar_path, target='.', compress='auto'):
         raise FileNotFoundError('Tarfile {} does not exist'.format(tar_path))
 
     if not path.exists(target) or not path.isdir(target):
-        raise FileNotFoundError('Cannot extract to {}, path does not exist'.format(target))
+        raise FileNotFoundError(
+            'Cannot extract to {}, path does not exist'.format(target))
 
     if compress in (None, 'auto'):
         compress = '*'
 
     with tarfile.open(tar_path, 'r:{}'.format(compress)) as tarh:
         tarh.extractall(target)
-    
-    
-    
+
 
 @expand_paths()
 def lstar(tar_path, compress='auto'):
@@ -117,10 +118,12 @@ def lstar(tar_path, compress='auto'):
         are not supported.
     '''
     if compress not in ('auto', 'gz', 'bz2'):
-        raise ValueError('compress must be one of {}'.format('auto', 'gz', 'bz2'))
+        raise ValueError(
+            'compress must be one of {}'.format('auto', 'gz', 'bz2'))
 
     if not path.exists(tar_path):
-        raise FileNotFoundError('tarfile at {} does not exist'.format(tar_path))
+        raise FileNotFoundError(
+            'tarfile at {} does not exist'.format(tar_path))
 
     if compress == 'auto':
         compress = '*'

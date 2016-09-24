@@ -5,9 +5,7 @@ Implementations of file management shell commands.
 import shutil
 import os
 from os import path
-from functools import wraps
 import glob
-import fnmatch
 from collections import defaultdict
 
 from nosh.utils import (expand_path, require_args, expand_paths,
@@ -28,7 +26,7 @@ def mv(*args, ignore_errors=False):
     '''
     target = args[-1]
     sources = args[:-1]
-    
+
     if not path.isdir(target) and len(sources) > 1:
         maybe_exception(NotADirectoryError,
                         ('Target {} is not a directory but multiple sources '
@@ -40,6 +38,7 @@ def mv(*args, ignore_errors=False):
             shutil.move(source, target)
     else:
         shutil.move(sources[0], target)
+
 
 @require_args(min=1)
 @expand_paths()
@@ -55,7 +54,7 @@ def rm(*args, recursive=False, ignore_errors=False):
         If True, will recursively delete folders and their contents.
         Defaults to False.
     ignore_errors : bool
-        If True, will ignore errors when e.g. specified  files do not exist. 
+        If True, will ignore errors when e.g. specified  files do not exist.
         Defaults to False.
     '''
     for arg in args:
@@ -70,6 +69,7 @@ def rm(*args, recursive=False, ignore_errors=False):
         else:
             os.unlink(arg)
 
+
 @require_args(min=2)
 @expand_paths()
 def cp(*args, recursive=False, ignore_errors=False):
@@ -82,7 +82,7 @@ def cp(*args, recursive=False, ignore_errors=False):
         target filepath/directory, all preceding args are copied. Each path
         is expanded as a glob pattern.
     recursive : bool
-        Whether to copy directories (recursively).  
+        Whether to copy directories (recursively). 
     '''
     target = args[-1]
     sources = args[:-1]
@@ -124,7 +124,7 @@ def cp(*args, recursive=False, ignore_errors=False):
                                 ignore_errors)
         else:
             shutil.copy(source, target)
-    
+
 
 def pwd():
     return expand_path(os.curdir)
@@ -146,6 +146,7 @@ def ls(*args):
         return results[list(results.keys())[0]]
     return results
 
+
 @expand_paths(do_glob=False)
 def mkdir(dir_name, mode=511, parents=False, exist_ok=False):
     if parents:
@@ -156,12 +157,19 @@ def mkdir(dir_name, mode=511, parents=False, exist_ok=False):
                 return
         os.mkdir(dir_name, mode=mode)
 
+
 @expand_paths()
 def touch(*args):
     '''Highly incomplete touch implementation (currently only can create
-    empty files).
+    empty files or touch existing ones).
     '''
     for filen in args:
+        if path.isdir(filen):
+            raise OSError(
+                'Cannot touch {}, directory of that name exists'.format(filen))
         if not path.exists(filen):
-            with open(filen, 'w') as fileh:
+            with open(filen, 'w'):
+                pass
+        else:
+            with open(filen, 'r'):
                 pass

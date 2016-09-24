@@ -11,6 +11,7 @@ import pytest
 DIR_NAMES = ('dir1', )
 FILE_NAMES = ['{}.txt'.format(i) for i in range(5)]
 
+
 def create_example_files():
     for dir_name in DIR_NAMES:
         os.mkdir(dir_name)
@@ -24,6 +25,7 @@ def create_example_files():
     no.touch(path.join('dir1', 'dir_file.txt'))
 
     no.tar('*.txt', 'example.tar.gz')
+
 
 def temp_dir(func):
     '''Decorator to carry out tests in a py.test temp dir.'''
@@ -44,7 +46,7 @@ class TestTar(object):
             no.tar('1.txt')
 
     @temp_dir
-    def test_target_exists(self):
+    def test_target_file_exists(self):
         with pytest.raises(FileExistsError):
             no.tar('*.txt', 'text_file.txt')
 
@@ -54,7 +56,7 @@ class TestTar(object):
             no.tar('*.txt', 'tar_archive_not_present.tar.gz', append=True)
 
     @temp_dir
-    def test_target_exists(self):
+    def test_target_dir_exists(self):
         no.touch('existing.tar.gz')
         with pytest.raises(FileExistsError):
             no.tar('*.txt', 'existing.tar.gz')
@@ -69,7 +71,7 @@ class TestTar(object):
         paths = [m.path for m in members]
         for file_name in FILE_NAMES:
             assert file_name in paths
-            
+
 
 class TestUntar(object):
     @temp_dir
@@ -94,4 +96,3 @@ class TestUntar(object):
 
         for file_name in FILE_NAMES:
             assert path.exists(path.join('extractpath', file_name))
-
