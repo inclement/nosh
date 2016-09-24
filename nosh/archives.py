@@ -17,7 +17,7 @@ import zipfile
 
 
 @require_args(min=2)
-@expand_paths()
+@expand_paths(abspath=False)
 def tar(*args, compress='gz', append=False):
     '''Create or append to tarballs.
 
@@ -56,7 +56,7 @@ def tar(*args, compress='gz', append=False):
         if compress is not None:
             raise ValueError(
                 'Appending to compressed ({}) tarfiles not supported'.format(compress))
-        t = tarfile.open(target, mode='a')
+        tarh = tarfile.open(target, mode='a')
     else:
         if compress is None:
             compress = '*'
@@ -99,4 +99,16 @@ def lstar(tar_path, compress='auto'):
         explicitly, but probably don't want to. Other compression formats
         are not supported.
     '''
-    pass
+    if compress not in ('auto', 'gz', 'bz2'):
+        raise ValueError('compress must be one of {}'.format('auto', 'gz', 'bz2'))
+
+    if not path.exists(tar_path):
+        raise FileNotFoundError('tarfile at {} does not exist'.format(tar_path))
+
+    if compress == 'auto':
+        compress = '*'
+
+    with tarfile.open(tar_path, mode='r:{}'.format(compress)) as tarh:
+        members = tarh.getmembers()
+
+    return members

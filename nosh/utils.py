@@ -9,8 +9,11 @@ from functools import wraps
 import glob
 
 
-def expand_path(input):
-    return path.abspath(path.expanduser(input))
+def expand_path(input, abspath=True):
+    p = path.expanduser(input)
+    if abspath:
+        p = path.abspath(p)
+    return p
 
 def _get_num_args_text(min, max):
     if min is not None and max is not None:
@@ -48,7 +51,7 @@ def require_args(min=None, max=None,
         return new_func
     return require_args_decorator
 
-def expand_paths(*args, do_glob=True):
+def expand_paths(*args, do_glob=True, abspath=True):
     '''Assumes all the args of func are paths, and expands them.
 
     If any args are passed, the function's kwargs are also expanded as
@@ -62,7 +65,7 @@ def expand_paths(*args, do_glob=True):
     def expand_paths_decorator(func):
         @wraps(func)
         def new_func(*fargs, **fkwargs):
-            fargs = [expand_path(arg) for arg in fargs]
+            fargs = [expand_path(arg, abspath=abspath) for arg in fargs]
             if do_glob:
                 new_args = []
                 for arg in fargs:
@@ -74,7 +77,7 @@ def expand_paths(*args, do_glob=True):
             
             for kwarg in fkwargs:
                 if kwarg in args:
-                    fkwargs[kwarg] = expand_path(fkwargs[kwarg])
+                    fkwargs[kwarg] = expand_path(fkwargs[kwarg], abspath=abspath)
                 
             return func(*fargs, **fkwargs)
         return new_func
