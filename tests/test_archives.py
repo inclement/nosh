@@ -23,6 +23,8 @@ def create_example_files():
 
     no.touch(path.join('dir1', 'dir_file.txt'))
 
+    no.tar('*.txt', 'example.tar.gz')
+
 def temp_dir(func):
     '''Decorator to carry out tests in a py.test temp dir.'''
     def new_func(*args, **kwargs):
@@ -68,3 +70,28 @@ class TestTar(object):
         for file_name in FILE_NAMES:
             assert file_name in paths
             
+
+class TestUntar(object):
+    @temp_dir
+    def test_tarfile_does_not_exist(self):
+        with pytest.raises(FileNotFoundError):
+            no.untar('not_here.tar.gz')
+
+    @temp_dir
+    def test_target_does_not_exist(self):
+        with pytest.raises(FileNotFoundError):
+            no.untar('example.tar.gz', target='not_here_dir')
+
+    @temp_dir
+    def test_extract(self):
+        no.mkdir('extractpath')
+        assert path.exists('extractpath')
+
+        for file_name in FILE_NAMES:
+            assert not path.exists(path.join('extractpath', file_name))
+
+        no.untar('example.tar.gz', 'extractpath')
+
+        for file_name in FILE_NAMES:
+            assert path.exists(path.join('extractpath', file_name))
+

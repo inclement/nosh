@@ -81,8 +81,25 @@ def untar(tar_path, target='.', compress='auto'):
         automatically work with gzip or bz2. You can also specify these
         explicitly, but probably don't want to. Other compression formats
         are not supported.
+
+    TODO
+    ----
+    include and exclude arguments
     '''
-    pass
+
+    if not path.exists(tar_path):
+        raise FileNotFoundError('Tarfile {} does not exist'.format(tar_path))
+
+    if not path.exists(target) or not path.isdir(target):
+        raise FileNotFoundError('Cannot extract to {}, path does not exist'.format(target))
+
+    if compress in (None, 'auto'):
+        compress = '*'
+
+    with tarfile.open(tar_path, 'r:{}'.format(compress)) as tarh:
+        tarh.extractall(target)
+    
+    
     
 
 @expand_paths()
