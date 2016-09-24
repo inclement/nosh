@@ -149,12 +149,15 @@ def ls(*args):
 
 @expand_paths(do_glob=False)
 def mkdir(dir_name, mode=511, parents=False, exist_ok=False):
+    if path.exists(dir_name):
+        if not exist_ok:
+            raise FileExistsError(
+                'Cannot make dir at {}, it already exists'.format(dir_name))
+        else:
+            return
     if parents:
         os.makedirs(dir_name, mode=mode, exist_ok=exist_ok)
     else:
-        if path.exists(dir_name):
-            if exist_ok:
-                return
         os.mkdir(dir_name, mode=mode)
 
 

@@ -41,11 +41,26 @@ def test_create_example_files():
         assert path.isfile(file_name)
             
 
-@temp_dir
-def test_mkdir():
-    no.mkdir('test_dir')
-    assert path.exists('test_dir')
-    assert path.isdir('test_dir')
+class TestMkdir(object):
+    @temp_dir
+    def test_mkdir(self):
+        no.mkdir('test_dir')
+        assert path.exists('test_dir')
+        assert path.isdir('test_dir')
+
+    @temp_dir
+    def test_mkdir_exists_not_ok(self):
+        with pytest.raises(FileExistsError):
+            no.mkdir('dir1')
+
+    @temp_dir
+    def test_mkdir_exists_ok(self):
+        no.mkdir('dir1', exist_ok=True)
+
+    @temp_dir
+    def test_mkdir_parents(self):
+        no.mkdir('t1/t2/t3', parents=True)
+        assert path.exists(path.join('t1', 't2', 't3'))
 
 
 @temp_dir
