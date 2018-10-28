@@ -91,4 +91,4 @@ def maybe_exception(exception, message, errors_okay):
     if not errors_okay:
         raise exception(message)
     else:
-        print('Error: {}'.format(message))
+        print('Ignoring error: {}'.format(message))

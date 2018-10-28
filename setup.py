@@ -1,6 +1,8 @@
-from setuptools import setup, find_packages
 
-packages = find_packages()
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 setup(
     name='nosh',
@@ -8,6 +10,6 @@ setup(
     description='Shell-like tools in pure Python',
     author='Alexander Taylor',
     author_email='alexanderjohntaylor@gmail.com',
-    packages=packages,
-    package_data={'nosh': ['*.py']}
+    packages=['nosh'],
+    url='https://github.com/inclement/nosh',
 )

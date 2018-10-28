@@ -130,7 +130,7 @@ def pwd():
     return expand_path(os.curdir)
 
 
-@expand_paths('path', do_glob=False)
+@expand_paths(do_glob=False)
 def ls(*args):
     if not args:
         args = ['.']

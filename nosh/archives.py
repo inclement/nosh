@@ -132,3 +132,18 @@ def lstar(tar_path, compress='auto'):
         members = tarh.getmembers()
 
     return members
+
+
+@require_args(min=2)
+@expand_paths(abspath=False)
+def zip(*args):
+    sources = args[:-1]
+    target = args[-1]
+
+    if path.exists(target):
+        raise FileExistsError('Cannot zip to {}, file exists'.format(target))
+
+    with zipfile.ZipFile(target, 'w') as ziph:
+        for source in sources:
+            ziph.write(source)
+        
