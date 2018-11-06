@@ -10,6 +10,7 @@ from collections import defaultdict
 
 from nosh.utils import (expand_path, require_args, expand_paths,
                         maybe_exception)
+from nosh.wrappers.os import path as nosh_path
 
 
 @require_args(min=2, max=None)

@@ -8,8 +8,8 @@ import copy
 
 READABLE_PATHS_STACK = []
 WRITABLE_PATHS_STACK = []
-CURRENT_READABLE_PATHS = set()
-CURRENT_WRITABLE_PATHS = set()
+CURRENT_READABLE_PATHS = set('/')
+CURRENT_WRITABLE_PATHS = set('/')
 RESTRICT_PATHS = False
 
 def _push_readable():
@@ -19,10 +19,18 @@ def _push_writable():
     WRITABLE_PATHS_STACK.append(CURRENT_WRITABLE_PATHS.copy())
 
 def _pop_readable():
+    global CURRENT_READABLE_PATHS
     CURRENT_READABLE_PATHS = READABLE_PATHS_STACK.pop()
 
 def _pop_writable():
+    global CURRENT_WRITABLE_PATHS
     CURRENT_WRITABLE_PATHS = WRITABLE_PATHS_STACK.pop()
+
+def get_readable():
+    return CURRENT_READABLE_PATHS
+
+def get_writable():
+    return CURRENT_WRITABLE_PATHS
 
 @contextmanager
 def push_readable(*args):
@@ -97,3 +105,6 @@ def is_subpath(path, start_paths):
             return True
     return False
     
+
+class NotReadableError(Exception):
+    pass
