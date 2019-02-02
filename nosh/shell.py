@@ -19,6 +19,7 @@ from nosh.wrapperutils import (
 
 @require_args(min=2, max=None)
 @expand_paths()
+@require_writable_args()
 def mv(*args, ignore_errors=False):
     '''Move files from one location to another.
 
@@ -47,6 +48,7 @@ def mv(*args, ignore_errors=False):
 
 @require_args(min=1)
 @expand_paths()
+@require_writable_args()
 def rm(*args, recursive=False, ignore_errors=False):
     '''
     Delete files and/or directories.
@@ -140,6 +142,7 @@ def pwd():
 
 
 @expand_paths(do_glob=False)
+# @require_readable_args()
 def ls(*args):
     if not args:
         args = ['.']

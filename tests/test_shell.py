@@ -157,6 +157,9 @@ class TestCp(object):
             with pytest.raises(state.NotReadableError):
                 no.cp('1.txt', 'output.txt')
 
+            with pytest.raises(state.NotReadableError):
+                no.cp('1.txt', '2.txt', '3.txt')
+
     @temp_dir
     def test_cp_target_not_writable(self):
         with state.set_writable():
@@ -186,6 +189,13 @@ class TestLs(object):
     def test_ls_glob_filename(self):
 
         assert len(no.ls('[1-2].txt', '3.txt')) == 3
+
+    # @temp_dir
+    # def test_require_readable_args(self):
+    #     no.ls()
+    #     with state.set_readable():
+    #         with pytest.raises(state.NotReadableError):
+    #             no.ls()
 
         
 class TestRm(object):
@@ -228,6 +238,20 @@ class TestRm(object):
     def test_rm_no_args(self):
         with pytest.raises(ValueError):
             no.rm()
+
+    @temp_dir
+    def test_rm_require_writable_args(self):
+        no.rm('1.txt')
+
+        with state.set_writable():
+            with pytest.raises(state.NotWritableError):
+                no.rm('2.txt')
+
+        with state.set_writable('4.txt', '5.txt'):
+            with pytest.raises(state.NotWritableError):
+                no.rm('3.txt', '4.txt')
+        no.rm('3.txt', '4.txt')
+                
         
 
 def test_pwd():
@@ -276,5 +300,8 @@ class TestMv(object):
         with pytest.raises(NotADirectoryError):
             no.mv('*.txt', 'target.txt')
 
-        
-
+    @temp_dir
+    def test_require_writable_args(self):
+        with state.set_writable():
+            with pytest.raises(state.NotWritableError):
+                no.mv('0.txt', 'target.txt')
