@@ -12,6 +12,7 @@ from nosh.utils import (expand_path, require_args, expand_paths,
                         maybe_exception)
 from nosh.wrapperutils import (
     require_readable_args, require_writable_args, require_arg_state)
+from nosh import state
 # from nosh.wrappers import os
 # from nosh.wrappers.os import path
 # from nosh.wrappers import shutil
@@ -142,10 +143,15 @@ def pwd():
 
 
 @expand_paths(do_glob=False)
-# @require_readable_args()
+@require_readable_args()
 def ls(*args):
     if not args:
         args = ['.']
+
+        # Do an extra check if the dir is readable, as the decorator
+        # can't catch this arg
+        if not state.is_readable('.'):
+            raise state.NotReadableError()
     results = defaultdict(lambda: [])
     for arg in args:
         if path.isdir(arg):

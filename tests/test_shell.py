@@ -190,12 +190,18 @@ class TestLs(object):
 
         assert len(no.ls('[1-2].txt', '3.txt')) == 3
 
-    # @temp_dir
-    # def test_require_readable_args(self):
-    #     no.ls()
-    #     with state.set_readable():
-    #         with pytest.raises(state.NotReadableError):
-    #             no.ls()
+    @temp_dir
+    def test_require_readable_args(self):
+        no.ls()
+        with state.set_readable():
+            with pytest.raises(state.NotReadableError):
+                print(no.ls())
+
+            with pytest.raises(state.NotReadableError):
+                print(no.ls('.'))
+
+            with pytest.raises(state.NotReadableError):
+                print(no.ls('/home'))
 
         
 class TestRm(object):
