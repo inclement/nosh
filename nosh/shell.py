@@ -2,15 +2,19 @@
 Implementations of file management shell commands.
 '''
 
-import shutil
 import os
 from os import path
+import shutil
 import glob
 from collections import defaultdict
 
 from nosh.utils import (expand_path, require_args, expand_paths,
                         maybe_exception)
-from nosh.wrappers.os import path as nosh_path
+from nosh.wrapperutils import (
+    require_readable_args, require_writable_args, require_arg_state)
+# from nosh.wrappers import os
+# from nosh.wrappers.os import path
+# from nosh.wrappers import shutil
 
 
 @require_args(min=2, max=None)
@@ -73,6 +77,8 @@ def rm(*args, recursive=False, ignore_errors=False):
 
 @require_args(min=2)
 @expand_paths()
+@require_readable_args()
+@require_writable_args(-1)
 def cp(*args, recursive=False, ignore_errors=False):
     '''Copy files and/or directories.
 
@@ -87,6 +93,8 @@ def cp(*args, recursive=False, ignore_errors=False):
     '''
     target = args[-1]
     sources = args[:-1]
+
+    print('isdir is', path.isdir)
 
     if not path.isdir(target) and len(sources) > 1:
         maybe_exception(NotADirectoryError,

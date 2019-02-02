@@ -108,3 +108,6 @@ def is_subpath(path, start_paths):
 
 class NotReadableError(Exception):
     pass
+
+class NotWritableError(Exception):
+    pass

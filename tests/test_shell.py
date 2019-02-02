@@ -1,6 +1,7 @@
 import nosh as no
 import nosh.utils as noutils
 import nosh.dirutils as nodirutils
+from nosh import state
 
 from os import path
 import os
@@ -150,6 +151,18 @@ class TestCp(object):
         assert path.exists(path.join('new_dir', '1.txt'))
         assert path.exists(path.join('new_dir', '2.txt'))
 
+    @temp_dir
+    def test_cp_source_not_readable(self):
+        with state.set_readable():
+            with pytest.raises(state.NotReadableError):
+                no.cp('1.txt', 'output.txt')
+
+    @temp_dir
+    def test_cp_target_not_writable(self):
+        with state.set_writable():
+            with pytest.raises(state.NotWritableError):
+                no.cp('1.txt', 'output.txt')
+                
 
 
 class TestLs(object):
@@ -219,7 +232,6 @@ class TestRm(object):
 
 def test_pwd():
     p = no.pwd()
-
 
 class TestMv(object):
     @temp_dir
